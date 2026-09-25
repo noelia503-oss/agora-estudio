@@ -36,6 +36,7 @@ jobs:
         run: npm run build
         env:
           BASE_PATH: /${{ github.event.repository.name }}/
+          VITE_GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}
       - name: Comprobar que no se empaquetó material privado
         run: test ! -e dist/material
       - name: Subir la web compilada

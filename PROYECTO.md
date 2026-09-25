@@ -8,23 +8,23 @@ Centralizar preguntas y resultados de estudio en tres apartados:
 2. **Psicotécnicos:** razonamiento espacial, razonamiento abstracto, percepción y verbal.
 3. **Personalidad:** PPV (217 enunciados, escala 1–4) y Competea (119 enunciados aprox., escala 1–7). Son cuestionarios de autovaloración: no tienen respuesta correcta ni puntuación de aciertos.
 
-La interfaz debe adaptarse a Mac, iPad e iPhone. La primera versión funciona para una persona, en un navegador y sin conexión entre dispositivos.
+La interfaz debe adaptarse a Mac, iPad e iPhone. La app funciona localmente y permite guardar/restaurar manualmente una copia privada en Google Drive para trasladar el estudio entre dispositivos.
 
 ## Arquitectura propuesta
 
 - **Cliente:** React con TypeScript y Vite. Navegación y estilos adaptables; sin biblioteca de componentes obligatoria.
 - **Persistencia:** IndexedDB mediante un módulo de acceso a datos propio. Versionar el esquema para poder migrar datos sin perder preguntas ni intentos.
 - **Despliegue:** interfaz web estática empaquetada como aplicación de escritorio con Electron para Mac; el icono inicia Ágora y carga los archivos locales de la propia app, sin Vite, navegador externo ni servidor separado. La PWA para iPhone/iPad se publica con GitHub Actions en GitHub Pages bajo HTTPS. La carpeta `material/`, las preguntas y las copias de seguridad no se publican; IndexedDB sigue siendo local a cada dispositivo. La web y el repositorio de código son públicos para usar GitHub Pages con el plan actual.
-- **Respaldo:** exportación e importación de un archivo JSON versionado que incluya banco, configuración e historial. Validar el archivo completo antes de restaurarlo y pedir confirmación antes de sustituir datos locales.
+- **Respaldo y traslado privado:** exportación e importación JSON local, más guardado/restauración manual en la carpeta privada `appDataFolder` de Google Drive usando Google Identity Services y Drive API. Pedir autorización Google y confirmación antes de sustituir datos locales. El token OAuth vive solo en memoria. No se usa base de datos pública ni backend propio.
 - **Importación de preguntas:** CSV y `.xlsx` estructurados; TXT, PDF y `.docx` mediante extracción de texto. Cada formato produce borradores para una misma vista de revisión. En teoría y psicotécnicos se exige clave; en personalidad los textos se separan en enunciados y se asigna la escala del cuestionario, sin inventar claves. PDF.js y Mammoth se usan solo en los importadores documentales.
 
-El almacenamiento es local al navegador y al dispositivo. La copia de seguridad es necesaria para trasladar datos o recuperarlos si se borra el almacenamiento del navegador.
+El almacenamiento de trabajo es local al navegador y al dispositivo. Google Drive funciona como copia privada manual, no como sincronización en tiempo real ni edición concurrente. Para trasladar cambios hay que guardar en Drive en el dispositivo de origen y restaurar en el destino. Se recomienda descargar también copias locales periódicas.
 
-La versión de escritorio tiene su propio almacenamiento IndexedDB local, aislado del navegador y de otros dispositivos. Para trasladar preguntas e historial se usa la copia de seguridad JSON. El paquete contiene únicamente archivos compilados de la app; nunca incluye la carpeta privada `material/` ni sus documentos.
+La versión de escritorio tiene su propio almacenamiento IndexedDB local, aislado del navegador y de otros dispositivos. Para trasladar preguntas e historial se usa la copia JSON local. La conexión con Google Drive se ofrece en la PWA HTTPS; OAuth requiere configurar sus orígenes web permitidos. El paquete contiene únicamente archivos compilados de la app; nunca incluye la carpeta privada `material/` ni sus documentos.
 
 ## Privacidad del material de estudio
 
-La carpeta raíz `material/` es privada. Está excluida por `.gitignore`, denegada al servidor Vite y fuera del directorio de salida `dist/`. Nunca debe colocarse dentro de `public/` ni importarse desde código fuente. Los archivos solo se leen cuando la persona usuaria los selecciona en el importador; el contenido aprobado queda en IndexedDB local. Las copias JSON pueden contener preguntas y también deben tratarse como privadas.
+La carpeta raíz `material/` es privada. Está excluida por `.gitignore`, denegada al servidor Vite y fuera del directorio de salida `dist/`. Nunca debe colocarse dentro de `public/` ni importarse desde código fuente. Los archivos solo se leen cuando la persona usuaria los selecciona en el importador; el contenido aprobado queda en IndexedDB local. Las copias JSON y el espacio privado de Drive pueden contener preguntas y láminas y deben tratarse como privadas. El repositorio y GitHub Pages contienen solo código y la interfaz vacía.
 
 ## Modelo funcional mínimo
 
@@ -45,4 +45,4 @@ El texto aprobado de enunciados y alternativas se conserva y se muestra sin refo
 
 La plantilla exacta de columnas y el reconocimiento de preguntas en PDF/DOCX se comprobarán con archivos reales durante las fases de importación. Hasta entonces, el flujo de revisión manual cubre documentos cuyo diseño no permita separar preguntas con seguridad.
 
-Quedan fuera de la primera versión: `.xls`, `.doc`, preguntas que dependan de imágenes, sincronización, cuentas, baremos de personalidad y reglas oficiales de puntuación no facilitadas.
+Quedan fuera de la primera versión: `.xls`, `.doc`, preguntas que dependan de imágenes, sincronización automática en segundo plano, cuentas de usuario de Ágora, baremos de personalidad y reglas oficiales de puntuación no facilitadas.

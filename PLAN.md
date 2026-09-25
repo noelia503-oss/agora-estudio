@@ -61,3 +61,10 @@ Cada fase debe terminar con un resultado utilizable o verificable por sí mismo.
 - **Objetivo:** abrir Ágora desde un icono de Mac como una app nativa, con los archivos web incluidos y sin iniciar manualmente el servidor de desarrollo.
 - **Archivos afectados:** `electron/main.cjs`, configuración/scripts/dependencias de `package.json`, `build/icon.*`, `src/main.tsx`, `src/App.tsx`, `.gitignore` y documentación de despliegue.
 - **Prueba:** generar el DMG para Mac, abrir la app empaquetada, comprobar que arranca sin Vite y que su archivo no contiene `material/`. Confirmar que puede instalarse arrastrándola a Aplicaciones. Los datos IndexedDB de la app de escritorio son propios; se trasladan con una copia JSON.
+
+## Fase 8 — Copia privada en Google Drive
+
+- **Objetivo:** guardar y restaurar manualmente datos de estudio en `appDataFolder` de Google Drive, incluyendo preguntas, colecciones, intentos, ajustes, sesión en curso y láminas con sus anotaciones. Mantener IndexedDB como copia local.
+- **Archivos afectados:** `src/data/database.ts`, nuevo `src/data/google-drive-sync.ts`, `src/App.tsx`, `src/vite-env.d.ts`, `.env.example`, `.github/workflows/deploy-pages.yml`, `AGENTS.md`, `PROYECTO.md`, `PLAN.md` y `ESTADO.md`.
+- **Prueba:** `npm run build`; comprobar que falta de configuración de OAuth muestra un aviso claro; revisar que el alcance solicitado sea solo `drive.appdata`, que los datos no se escriban en stores públicos de Drive y que `dist/material` no exista. Tras configurar credenciales Google, guardar en Drive desde un dispositivo y restaurar en otro; comparar banco, una lámina/anotación, historial y sesión en curso.
+- **Límite:** es copia/restauración manual, no sincronización automática. Cada dispositivo conserva su propio IndexedDB. Requiere un OAuth Client ID web público (no secreto) y el Drive API habilitado en Google Cloud.

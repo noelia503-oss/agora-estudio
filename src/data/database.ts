@@ -1,5 +1,5 @@
 export const DATABASE_NAME = 'agora-estudio';
-export const DATABASE_VERSION = 2;
+export const DATABASE_VERSION = 3;
 export const STORE_NAMES = ['questions', 'collections', 'attempts', 'settings', 'importBatches', 'psychSheets'] as const;
 export type StoreName = (typeof STORE_NAMES)[number];
 
@@ -48,7 +48,7 @@ export async function getAll<T>(store: StoreName): Promise<T[]> {
 export async function saveMany<T extends { id: string }>(store: StoreName, records: T[]): Promise<void> {
   if (!records.length) return;
   const database = await db();
-  return new Promise((resolve, reject) => { const transaction = database.transaction(store, 'readwrite'); for (const record of records) transaction.objectStore(store).put(record); transaction.oncomplete = () => resolve(); transaction.onerror = () => reject(transaction.error); transaction.onabort = () => reject(transaction.error); });
+  return new Promise((resolve, reject) => { const transaction = database.transaction(store, 'readwrite'); for (const record of records) transaction.objectStore(store).put({ ...record, updatedAt: new Date().toISOString() }); transaction.oncomplete = () => resolve(); transaction.onerror = () => reject(transaction.error); transaction.onabort = () => reject(transaction.error); });
 }
 export async function saveRecord<T extends { id: string }>(store: StoreName, record: T): Promise<void> { return saveMany(store, [record]); }
 export async function deleteRecord(store: StoreName, id: string): Promise<void> {
@@ -73,6 +73,26 @@ export async function replaceAllData(data: { questions: Question[]; collections:
     for (const item of data.collections) transaction.objectStore('collections').put(item);
     for (const item of data.attempts) transaction.objectStore('attempts').put(item);
     transaction.objectStore('settings').put(data.settings);
+    transaction.oncomplete = () => resolve(); transaction.onerror = () => reject(transaction.error); transaction.onabort = () => reject(transaction.error);
+  });
+}
+
+export type DatabaseSnapshot = { [K in StoreName]: Array<Record<string, unknown> & { id: string }> };
+
+export async function getDatabaseSnapshot(): Promise<DatabaseSnapshot> {
+  const entries = await Promise.all(STORE_NAMES.map(async (name) => [name, await getAll<Record<string, unknown> & { id: string }>(name)] as const));
+  return Object.fromEntries(entries) as DatabaseSnapshot;
+}
+
+export async function replaceDatabaseSnapshot(snapshot: DatabaseSnapshot): Promise<void> {
+  const database = await db();
+  return new Promise((resolve, reject) => {
+    const transaction = database.transaction([...STORE_NAMES], 'readwrite');
+    for (const name of STORE_NAMES) {
+      const store = transaction.objectStore(name);
+      store.clear();
+      for (const item of snapshot[name]) store.put(item);
+    }
     transaction.oncomplete = () => resolve(); transaction.onerror = () => reject(transaction.error); transaction.onabort = () => reject(transaction.error);
   });
 }

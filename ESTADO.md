@@ -1,7 +1,7 @@
 # Estado del proyecto
 
-**Fecha de actualización:** 2026-09-25  
-**Estado general:** MVP local implementado y paquete autónomo de escritorio para Mac generado; compilación correcta. Las fases 2–7 requieren validación con material real.
+**Fecha de actualización:** 2026-09-25
+**Estado general:** MVP local implementado y paquete autónomo de escritorio para Mac generado; compilación correcta. La fase 8 está implementada y espera la configuración OAuth de Google para probarse entre dispositivos.
 
 **App de escritorio autónoma para Mac — 2026-09-25:** se añadió un contenedor Electron con protocolo local seguro que sirve la compilación incluida en el paquete; al hacer clic en Ágora no hay que arrancar Vite ni otro servidor. Se generó `release/Agora-0.1.0-arm64.dmg` (Apple Silicon, 136 MB); `hdiutil verify` confirma el checksum y el `app.asar` contiene la interfaz sin rutas `material/`. `npm run build`, `node --check electron/main.cjs` correctos. El sistema registró Ágora como proceso abierto, aunque la inspección de accesibilidad de la ventana agotó tiempo. Firma del desarrollador desactivada porque `codesign` devolvió `errSecInternalComponent` en la llave del certificado. Falta confirmar visualmente la ventana y que abre desde Aplicaciones en Finder. La app de escritorio tiene IndexedDB separado: copia las preguntas/historial mediante JSON; la copia actual no incluye láminas psicotécnicas ni sesiones en curso.
 
@@ -47,13 +47,16 @@
 - [/] **Fase 5 — Sesiones de examen.** Test personalizado por bloque/tema/categoría/colección y cantidad, simulacro con tiempo y configuración, práctica de exámenes agrupados y guardado del progreso para recuperarlo al recargar. Build correcto; falta completar una sesión con un lote real.
 - [/] **Fase 6 — Historial y errores.** Cada intento guarda respuestas y copia de las preguntas; resultados muestran clave y respuestas; se repiten solo respuestas incorrectas (no las omitidas). Build correcto; falta validación con intentos reales.
 - [/] **Fase 7 — Respaldo.** Exportación/restauración JSON con validación de estructura y confirmación de sustitución. Build correcto; falta probar ciclo de exportación/restauración con datos de usuario.
+- [/] **Fase 8 — Copia privada en Google Drive.** Pantalla de Ajustes, OAuth `drive.appdata`, guardado/restauración de stores y láminas. Build y control de privacidad correctos. Ya están habilitadas Drive API, las URLs autorizadas, el test user y la variable Actions `GOOGLE_CLIENT_ID`. Falta publicar y probar el ciclo entre dos dispositivos.
 
 ## Siguiente paso
 
-Probar la importación revisada de PPV y Competea con los archivos seleccionados desde la interfaz y confirmar los recuentos. Seleccionar PNG desde el visor para validar anotaciones y recarga, revisar tamaños Mac/iPad/iPhone, y completar importaciones CSV/XLSX y el ciclo de copia/restauración. Ninguna fase se considera validada hasta completar esas comprobaciones.
+Publicar los cambios preparados y comprobar el flujo Guardar en Drive → Restaurar en otro dispositivo. También quedan pendientes pruebas de importaciones y validación de tamaños descritas arriba.
 
 ## Bloqueos
 
 El banco local sigue sin preguntas importadas. CSV/XLSX y PDF/DOCX aún deben contrastarse desde archivos seleccionados por la persona usuaria y pasar por revisión antes de guardarse.
 
 **Publicación PWA en GitHub Pages — 2026-09-25:** se adaptaron recursos, manifiesto y service worker a la ruta `/agora-estudio/`. El workflow `.github/workflows/deploy-pages.yml` compila y publica solo `dist/`, y falla si detecta `dist/material`. `.gitignore` excluye `/material/`, `.env*` y `.DS_Store`. El usuario autorizó hacer público el repositorio porque el plan actual no admite Pages desde repositorios privados. Repositorio: `https://github.com/noelia503-oss/agora-estudio`. Web HTTPS publicada: `https://noelia503-oss.github.io/agora-estudio/`. La ejecución 36111668355 terminó correctamente; el paso de control de privacidad pasó. Se comprobó que `material/` no está versionada ni aparece en `dist/`; no se leyó su contenido. Pendiente: abrir la URL en Safari del iPad y añadirla a la pantalla de inicio. Los datos de IndexedDB no se sincronizan entre Mac e iPad.
+
+**Fase 8 — Copia privada en Google Drive — 2026-09-25:** añadida copia/restauración manual mediante OAuth de Google con alcance limitado a `drive.appdata`; IndexedDB sigue siendo el almacenamiento de trabajo. La copia contempla preguntas, colecciones, historial, ajustes, sesión en curso y láminas con trazos; los binarios usan Drive resumable upload. Restaurar pide confirmación antes de reemplazar los datos locales. No se guarda token OAuth ni se añade servidor o dependencia. En Google Cloud ya está habilitada Drive API, el cliente web `Agora web` autoriza la URL Pages y localhost, y la cuenta de uso se añadió como test user. El Client ID público se guardó en Actions como `GOOGLE_CLIENT_ID`. `npm run build` pasa y se comprobó que `material/` sigue ignorada por Git, no versionada y fuera de `dist/`. Pendiente publicar los cambios del repositorio y probar guardar/restaurar entre dispositivos. La app de escritorio `agora://` sigue usando copia JSON local.
