@@ -68,3 +68,9 @@ Cada fase debe terminar con un resultado utilizable o verificable por sí mismo.
 - **Archivos afectados:** `src/data/database.ts`, nuevo `src/data/google-drive-sync.ts`, `src/App.tsx`, `src/vite-env.d.ts`, `.env.example`, `.github/workflows/deploy-pages.yml`, `AGENTS.md`, `PROYECTO.md`, `PLAN.md` y `ESTADO.md`.
 - **Prueba:** `npm run build`; comprobar que falta de configuración de OAuth muestra un aviso claro; revisar que el alcance solicitado sea solo `drive.appdata`, que los datos no se escriban en stores públicos de Drive y que `dist/material` no exista. Tras configurar credenciales Google, guardar en Drive desde un dispositivo y restaurar en otro; comparar banco, una lámina/anotación, historial y sesión en curso.
 - **Límite:** es copia/restauración manual, no sincronización automática. Cada dispositivo conserva su propio IndexedDB. Requiere un OAuth Client ID web público (no secreto) y el Drive API habilitado en Google Cloud.
+
+## Extensión — Subgrupos de láminas psicotécnicas
+
+- **Objetivo:** clasificar láminas por área y subgrupo a partir de las carpetas aportadas, tanto al importar como al navegar por la biblioteca.
+- **Archivos afectados:** `src/PsychSheets.tsx`, `src/data/database.ts`, `PROYECTO.md`, `ESTADO.md`.
+- **Prueba:** elegir cada área y subgrupo, importar una lámina y comprobar que queda visible solo en ese grupo tras recargar y restaurar una copia.

@@ -10,6 +10,12 @@ const areas: { id: PsychCategory; label: string }[] = [
   { id: 'percepcion', label: 'Percepción' },
   { id: 'verbal', label: 'Verbal' },
 ];
+const subgroups: Record<PsychCategory, string[]> = {
+  espacial: ['Rotación espacial', 'Cubos', 'Pirámides', 'Recortables', 'Pentaedros', 'Octaedros', 'Hexaedros', 'Heptaedros', 'Giros Angulares'],
+  abstracto: ['Dominos', 'Series de figuras', 'Ecuaciones', 'Velocímetros', 'Cuadros lógicos', 'Cambio de medidas', 'Matrices', 'Matrices numéricas', 'Matrices (2)', 'Jeroglíficos'],
+  percepcion: ['Sopas de letras', 'Similitudes', 'Identificación de caracteres', 'Diferencias'],
+  verbal: ['Antónimos', 'Definiciones', 'Analogías', 'Sinónimos', 'Deducciones', 'Comprensión lectora', 'Campos semánticos'],
+};
 const makeId = () => crypto.randomUUID();
 async function openPdf(blob: Blob) {
   const pdfjs = await import('pdfjs-dist');
@@ -23,6 +29,7 @@ export default function PsychSheets({ onClose }: { onClose: () => void }) {
   const [sheets, setSheets] = useState<PsychSheet[]>([]);
   const [selectedId, setSelectedId] = useState('');
   const [category, setCategory] = useState<PsychCategory>('espacial');
+  const [subgroup, setSubgroup] = useState('');
   const [tool, setTool] = useState<'pen' | 'eraser'>('pen');
   const [color, setColor] = useState('#c43b32');
   const [brush, setBrush] = useState(7);
@@ -38,7 +45,8 @@ export default function PsychSheets({ onClose }: { onClose: () => void }) {
   const activeStroke = useRef<DrawingStroke | null>(null);
   const strokesRef = useRef<DrawingStroke[]>([]);
   const selected = sheets.find((sheet) => sheet.id === selectedId);
-  const index = sheets.findIndex((sheet) => sheet.id === selectedId);
+  const visibleSheets = sheets.filter((sheet) => sheet.category === category && (sheet.subgroup ?? '') === subgroup);
+  const index = visibleSheets.findIndex((sheet) => sheet.id === selectedId);
   const isPdf = selected?.format === 'pdf';
   const currentStrokes = selected?.format === 'pdf'
     ? selected.pageStrokes?.[String(currentPage)] ?? (currentPage === 1 ? selected.strokes : [])
@@ -50,7 +58,7 @@ export default function PsychSheets({ onClose }: { onClose: () => void }) {
       if (!mounted) return;
       const ordered = items.sort((a, b) => a.name.localeCompare(b.name, 'es'));
       setSheets(ordered);
-      if (ordered[0]) { setSelectedId(ordered[0].id); setCategory(ordered[0].category); }
+      if (ordered[0]) { setSelectedId(ordered[0].id); setCategory(ordered[0].category); setSubgroup(ordered[0].subgroup ?? ''); }
     }).catch(() => setError('No se pudieron cargar las láminas guardadas.')).finally(() => { if (mounted) setBusy(false); });
     return () => { mounted = false; };
   }, []);
@@ -165,7 +173,7 @@ export default function PsychSheets({ onClose }: { onClose: () => void }) {
           image = await heicTo({ blob: file, type: 'image/jpeg', quality: 0.92 });
         }
         const pdf = isPdfFile ? await openPdf(file) : undefined;
-        created.push({ id: makeId(), name: file.name, category, image, format: isPdfFile ? 'pdf' : 'image', pageCount: pdf?.document.numPages ?? 1, strokes: [], pageStrokes: isPdfFile ? {} : undefined, createdAt: new Date().toISOString() });
+        created.push({ id: makeId(), name: file.name, category, subgroup: subgroup || undefined, image, format: isPdfFile ? 'pdf' : 'image', pageCount: pdf?.document.numPages ?? 1, strokes: [], pageStrokes: isPdfFile ? {} : undefined, createdAt: new Date().toISOString() });
         if (pdf) await pdf.destroy();
       }
       for (const sheet of created) await saveRecord('psychSheets', sheet);
@@ -220,8 +228,8 @@ export default function PsychSheets({ onClose }: { onClose: () => void }) {
     void persist(nextStrokes);
   }
   function goToSheet(nextIndex: number) {
-    const next = sheets[nextIndex];
-    if (next) { setSelectedId(next.id); setCategory(next.category); setCurrentPage(1); }
+    const next = visibleSheets[nextIndex];
+    if (next) { setSelectedId(next.id); setCategory(next.category); setSubgroup(next.subgroup ?? ''); setCurrentPage(1); }
   }
   function previous() { if (isPdf && currentPage > 1) setCurrentPage((page) => page - 1); else goToSheet(index - 1); }
   function next() { if (isPdf && currentPage < pageCount) setCurrentPage((page) => page + 1); else goToSheet(index + 1); }
@@ -231,9 +239,9 @@ export default function PsychSheets({ onClose }: { onClose: () => void }) {
     await deleteRecord('psychSheets', selected.id);
     const remaining = sheets.filter((sheet) => sheet.id !== selected.id);
     setSheets(remaining);
-    setSelectedId(remaining[0]?.id ?? '');
+    const nextInGroup = remaining.find((sheet) => sheet.category === category && (sheet.subgroup ?? '') === subgroup);
+    setSelectedId(nextInGroup?.id ?? '');
     setCurrentPage(1);
-    if (remaining[0]) setCategory(remaining[0].category);
   }
   function clearDrawing() {
     redraw([]);
@@ -248,9 +256,11 @@ export default function PsychSheets({ onClose }: { onClose: () => void }) {
     </header>
     <div className="psych-workspace-layout">
       <aside className="psych-sheet-library">
-        <label className="psych-area-select">Área<select value={category} onChange={(event) => setCategory(event.target.value as PsychCategory)}>{areas.map((area) => <option key={area.id} value={area.id}>{area.label}</option>)}</select></label>
-        <div className="psych-library-title"><strong>Mis láminas</strong><span>{sheets.length}</span></div>
-        {busy ? <p className="psych-library-empty">Cargando láminas…</p> : sheets.length ? <div className="psych-sheet-list">{sheets.map((sheet) => <button key={sheet.id} className={`psych-sheet-item ${sheet.id === selectedId ? 'selected' : ''}`} onClick={() => { setSelectedId(sheet.id); setCategory(sheet.category); }}><span className="psych-sheet-icon">▧</span><span><strong>{sheet.name}</strong><small>{areas.find((area) => area.id === sheet.category)?.label}</small></span></button>)}</div> : <div className="psych-library-empty"><span>▧</span><strong>Aún no hay láminas</strong><p>Añade los PNG que tienes guardados. Se almacenarán solo en este dispositivo.</p></div>}
+        <label className="psych-area-select">Área<select value={category} onChange={(event) => { const next = event.target.value as PsychCategory; const first = sheets.find((sheet) => sheet.category === next); setCategory(next); setSubgroup(first?.subgroup ?? ''); setSelectedId(first?.id ?? ''); }}>
+          {areas.map((area) => <option key={area.id} value={area.id}>{area.label}</option>)}</select></label>
+        <label className="psych-area-select">Subgrupo<select value={subgroup} onChange={(event) => { const next = event.target.value; const first = sheets.find((sheet) => sheet.category === category && (sheet.subgroup ?? '') === next); setSubgroup(next); setSelectedId(first?.id ?? ''); }}><option value="">Sin subgrupo</option>{subgroups[category].map((name) => <option key={name} value={name}>{name}</option>)}</select></label>
+        <div className="psych-library-title"><strong>{subgroup || 'Sin subgrupo'}</strong><span>{visibleSheets.length}</span></div>
+        {busy ? <p className="psych-library-empty">Cargando láminas…</p> : visibleSheets.length ? <div className="psych-sheet-list">{visibleSheets.map((sheet) => <button key={sheet.id} className={`psych-sheet-item ${sheet.id === selectedId ? 'selected' : ''}`} onClick={() => { setSelectedId(sheet.id); setCategory(sheet.category); setSubgroup(sheet.subgroup ?? ''); }}><span className="psych-sheet-icon">▧</span><span><strong>{sheet.name}</strong><small>{sheet.subgroup || 'Sin subgrupo'}</small></span></button>)}</div> : <div className="psych-library-empty"><span>▧</span><strong>Aún no hay láminas</strong><p>Selecciona «Añadir archivos» para guardar láminas dentro de este subgrupo. Se almacenarán solo en este dispositivo.</p></div>}
       </aside>
       <main className="psych-viewer">
         <div className="psych-tools" aria-label="Herramientas de dibujo">

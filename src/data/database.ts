@@ -20,7 +20,7 @@ export interface Attempt {
 export interface SimulatorConfig { block: Block; category?: PsychCategory; topics: number[]; questionCount: number; timeMinutes: number }
 export interface AppSettings { id: 'app'; schemaVersion: number; simulator?: SimulatorConfig }
 export interface DrawingStroke { tool: 'pen' | 'eraser'; color: string; width: number; points: Array<{ x: number; y: number }> }
-export interface PsychSheet { id: string; name: string; category: PsychCategory; image: Blob; format?: 'image' | 'pdf'; pageCount?: number; strokes: DrawingStroke[]; pageStrokes?: Record<string, DrawingStroke[]>; createdAt: string }
+export interface PsychSheet { id: string; name: string; category: PsychCategory; subgroup?: string; image: Blob; format?: 'image' | 'pdf'; pageCount?: number; strokes: DrawingStroke[]; pageStrokes?: Record<string, DrawingStroke[]>; createdAt: string }
 
 let databasePromise: Promise<IDBDatabase> | undefined;
 function openDatabase(): Promise<IDBDatabase> {
