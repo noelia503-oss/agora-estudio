@@ -1,0 +1,16 @@
+# Material de estudio privado. No añadirlo al repositorio ni a la distribución.
+/material/
+
+# Metadatos locales y configuración que puede contener secretos.
+.DS_Store
+.env
+.env.*
+!.env.example
+
+# Archivos generados localmente.
+/node_modules/
+/dist/
+/release/
+/.vite/
+*.tsbuildinfo
+agora-copia-*.json
