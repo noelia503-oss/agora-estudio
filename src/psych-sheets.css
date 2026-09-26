@@ -6,9 +6,13 @@
 .psych-sheet-library { display: flex; flex-direction: column; gap: 16px; min-height: 0; padding: 18px 13px; background: #fbfaf8; border-right: 1px solid #e9e5df; }
 .psych-area-select { display: grid; gap: 7px; color: #7d8796; font-size: 10px; font-weight: 600; }
 .psych-area-select select { width: 100%; padding: 10px 11px; border: 1px solid #e0e4e9; border-radius: 6px; color: #29364a; background: #fff; font: inherit; font-size: 11px; }
-.psych-library-title { display: flex; align-items: center; justify-content: space-between; padding: 2px 3px 9px; color: #344158; font: 600 12px 'Manrope', sans-serif; border-bottom: 1px solid #e8e5df; }
-.psych-library-title span { display: grid; width: 22px; height: 22px; place-items: center; border-radius: 50%; color: #a88143; background: #f2eadc; font: 600 10px sans-serif; }
-.psych-sheet-list { display: grid; align-content: start; gap: 5px; overflow: auto; }
+.psych-library-title { display: flex; width: 100%; align-items: center; gap: 7px; padding: 2px 3px 9px; border: 0; border-bottom: 1px solid #e8e5df; color: #344158; text-align: left; background: transparent; font: 600 12px 'Manrope', sans-serif; cursor: pointer; }
+.psych-library-title > span:first-child { display: grid; min-width: 0; flex: 1; gap: 4px; }
+.psych-library-title strong, .psych-library-title small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.psych-library-title small { color: #8791a0; font: 500 9px sans-serif; }
+.psych-library-count { display: grid; width: 22px; height: 22px; flex: 0 0 22px; place-items: center; border-radius: 50%; color: #a88143; background: #f2eadc; font: 600 10px sans-serif; }
+.psych-library-chevron { width: 15px; flex: 0 0 15px; color: #a88143; text-align: center; }
+.psych-sheet-list { display: grid; min-height: 0; max-height: min(42vh, 420px); align-content: start; gap: 5px; overflow: auto; }
 .psych-sheet-item { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 9px; border: 1px solid transparent; border-radius: 7px; color: #6f7a8b; text-align: left; background: transparent; cursor: pointer; transition: background .15s ease, border-color .15s ease; }
 .psych-sheet-item:hover { background: #f4f2ed; }
 .psych-sheet-item.selected { border-color: #e4d7c1; color: #27364b; background: #f6f1e8; }
@@ -61,8 +65,8 @@
   .psych-workspace-header > .psych-upload { grid-column: 3; grid-row: 2; padding: 9px 10px; font-size: 10px; }
   .psych-workspace-layout { grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); }
   .psych-sheet-library { gap: 9px; padding: 10px; border-right: 0; border-bottom: 1px solid #e9e5df; }
-  .psych-library-title { display: none; }
-  .psych-sheet-list { display: flex; gap: 7px; max-width: 100%; overflow-x: auto; }
+  .psych-library-title { display: flex; padding: 4px 2px 8px; }
+  .psych-sheet-list { display: flex; width: 100%; max-height: 74px; gap: 7px; overflow-x: auto; overflow-y: hidden; }
   .psych-sheet-item { flex: 0 0 170px; }
   .psych-library-empty { display: flex; align-items: center; gap: 7px; }
   .psych-library-empty:not(p) { display: none; }
