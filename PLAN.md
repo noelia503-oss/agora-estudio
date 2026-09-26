@@ -34,9 +34,9 @@ Cada fase debe terminar con un resultado utilizable o verificable por sí mismo.
 
 ## Fase 5 — Sesiones de examen
 
-- **Objetivo:** realizar tests personalizados, simulacros configurados y exámenes anteriores; guardar progreso, respuestas y puntuación. Los tests personalizados de teoría pueden incluir todas las preguntas filtradas y mostrar la corrección inmediatamente tras cada respuesta.
+- **Objetivo:** realizar tests personalizados, simulacros configurados, simulacros importados y exámenes anteriores; guardar progreso, respuestas y puntuación. Los tests personalizados de teoría pueden incluir todas las preguntas filtradas y mostrar la corrección inmediatamente tras cada respuesta.
 - **Archivos afectados:** motor de sesiones, vistas de test, ajustes del simulacro y persistencia de intentos.
-- **Prueba:** completar una sesión, recuperar otra tras recargar, verificar orden y puntuación, y comprobar el cierre al agotar el tiempo.
+- **Prueba:** completar una sesión, recuperar otra tras recargar, verificar orden y puntuación, probar una importación revisada de simulacro y comprobar el cierre al agotar el tiempo.
 
 ## Fase 6 — Historial y errores
 
