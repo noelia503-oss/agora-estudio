@@ -30,7 +30,7 @@ Cada fase debe terminar con un resultado utilizable o verificable por sí mismo.
 
 - **Objetivo:** consultar preguntas por bloque, tema, categoría y colección; mantener agrupados los exámenes anteriores y los dos tests de personalidad.
 - **Archivos afectados:** vistas y consultas del banco.
-- **Prueba:** localizar preguntas de un tema, una categoría psicotécnica, un examen anterior y cada test de personalidad.
+- **Prueba:** comprobar que Teoría oculta preguntas hasta abrir “Temas” y seleccionar uno; localizar después preguntas de ese tema, una categoría psicotécnica, un examen anterior y cada test de personalidad.
 
 ## Fase 5 — Sesiones de examen
 
