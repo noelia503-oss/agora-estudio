@@ -276,6 +276,7 @@ h1, h2, h3, p { margin-top: 0; }
 .exam-slot-info small { color: #929baa; font-size: 9px; }
 .exam-slot-actions { display: flex; grid-column: 2; gap: 6px; }
 .exam-slot-actions .button { font-size: 9px; }
+.review-card.is-invalid { border-color: #d78b83; box-shadow: 0 0 0 2px rgba(186, 89, 78, .08); }
 @media (max-width: 720px) { .exam-slot-grid { grid-template-columns: 1fr; } }
 @media (max-width: 560px) { .exam-slots { padding: 14px; } }
 .test-builder { display: grid; width: min(470px, 100%); gap: 14px; padding: 24px; border-radius: 11px; background: #fff; box-shadow: 0 24px 90px rgba(13,24,40,.25); }
