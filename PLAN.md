@@ -28,9 +28,9 @@ Cada fase debe terminar con un resultado utilizable o verificable por sí mismo.
 
 ## Fase 4 — Consulta del banco
 
-- **Objetivo:** consultar preguntas por bloque, tema, categoría y colección; mantener agrupados los exámenes anteriores y los dos tests de personalidad.
-- **Archivos afectados:** vistas y consultas del banco.
-- **Prueba:** comprobar que Teoría oculta preguntas hasta abrir “Temas” y seleccionar uno; localizar después preguntas de ese tema, una categoría psicotécnica, un examen anterior y cada test de personalidad.
+- **Objetivo:** consultar preguntas por bloque, tema, categoría y colección; mantener agrupados los exámenes anteriores en nueve casillas y los dos tests de personalidad.
+- **Archivos afectados:** vistas y consultas del banco, modelo de colecciones y estilos adaptables.
+- **Prueba:** comprobar que Teoría oculta preguntas hasta abrir “Temas” y seleccionar uno; importar un examen a una casilla, reabrirlo en orden original y localizar preguntas de ese tema, una categoría psicotécnica y cada test de personalidad.
 
 ## Fase 5 — Sesiones de examen
 

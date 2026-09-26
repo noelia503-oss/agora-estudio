@@ -10,7 +10,7 @@ export interface Question {
   prompt: string; options: string[]; correctIndex?: number; responseScale?: 4 | 7; referenceAnswer?: number;
   source: string; sourceReference?: string; createdAt: string;
 }
-export interface Collection { id: string; block: Block; kind: 'exam' | 'simulation' | 'personality'; title: string; source: string; questionOrder: string[] }
+export interface Collection { id: string; block: Block; kind: 'exam' | 'simulation' | 'personality'; title: string; source: string; questionOrder: string[]; slotIndex?: number }
 export interface AttemptAnswer { question: Question; selectedIndex: number | null; correct?: boolean }
 export interface Attempt {
   id: string; mode: 'personalizado' | 'simulacro' | 'examen' | 'falladas' | 'practica' | 'personalidad';
